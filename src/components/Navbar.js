@@ -1,5 +1,7 @@
 import React from "react";
 import { Navbar, Nav, Container } from "react-bootstrap";
+import LoginButton from "./LoginButton";
+import LogoutButton from "./LogoutButton";
 
 function AppNavbar() {
   return (
@@ -14,10 +16,8 @@ function AppNavbar() {
             <Nav.Link href="#reviews">Reviews</Nav.Link>
             <Nav.Link href="#reservations">My Reservations</Nav.Link>
           </Nav>
-          <Nav className="ml-auto">
-            <Nav.Link href="#profile">Profile</Nav.Link>
-            <Nav.Link href="#logout">Logout</Nav.Link>
-          </Nav>
+          <LoginButton />
+          <LogoutButton />
         </Navbar.Collapse>
       </Container>
     </Navbar>
