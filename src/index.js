@@ -12,7 +12,12 @@ root.render(
     <Auth0Provider
       domain={process.env.REACT_APP_DOMAIN}
       clientId={process.env.REACT_APP_CLIENT_ID}
-      redirectUri={window.location.origin}
+      authorizationParams={{
+        redirectUri: window.location.origin,
+        audience: "https://bookit/api",
+        scope:
+          "read:current_user update:current_user_metadata openid profile email",
+      }}
     >
       <App />
     </Auth0Provider>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import {
   Container,
@@ -12,18 +12,38 @@ import { FaSearch } from "react-icons/fa";
 import AppNavbar from "./components/Navbar";
 import RestaurantCard from "./components/RestaurantCard";
 import RestaurantInfoPage from "./components/RestaurantInfoPage"; // Create this component
-import restaurant1 from "./assets/restaurant1.jpg";
-import restaurant2 from "./assets/restaurant2.jpg";
-import restaurant3 from "./assets/restaurant3.jpg";
+//import restaurant1 from "./assets/restaurant1.jpg";
+//import restaurant2 from "./assets/restaurant2.jpg";
+//import restaurant3 from "./assets/restaurant3.jpg";
+import axios from "axios";
 import "./App.css";
 
+export function arrayToBase64(array) {
+  const arrayBufferView = new Uint8Array(array); //array is the bytea also known as arrayBuffer that was the data type of image in Postgres
+  const charArr = arrayBufferView.reduce((data, byte)=> (data + String.fromCharCode(byte)), ''); 
+  const img = btoa(charArr); //conversion happens here changing it into a string using base64 something that img src allowed
+
+  return img;
+}
+
 function App() {
-  const restaurants = [
-    { id: 1, name: "Restaurant A", imageSrc: restaurant1 },
-    { id: 2, name: "Restaurant B", imageSrc: restaurant2 },
-    { id: 3, name: "Restaurant C", imageSrc: restaurant3 },
-    // Add more restaurants
-  ];
+  const [restaurants, setRestaurants] = useState([]);
+
+  const getInitialData = async () => {
+    let initialAPICall = await axios.get(
+      `${process.env.REACT_APP_API_SERVER}/restaurants`
+    );
+    const restaurantData = initialAPICall.data;
+    // Convert image data to base64 for each restaurant
+    for (const restaurant of restaurantData) {
+      restaurant.imageBase64 = arrayToBase64(restaurant.imageData.data);
+    }
+    setRestaurants(restaurantData);
+  };
+
+  useEffect(() => {
+    getInitialData();
+  }, []);
 
   const cuisines = [
     "Italian",
@@ -95,7 +115,7 @@ function Home({ cuisines, restaurants }) {
             <RestaurantCard
               id={restaurant.id}
               name={restaurant.name}
-              imageSrc={restaurant.imageSrc}
+              imageSrc={`data:image/jpeg;base64,${restaurant.imageBase64}`}
             />
           </Col>
         ))}

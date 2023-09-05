@@ -10,6 +10,7 @@ function RestaurantCard({ id, name, imageSrc }) {
         <Card.Img
           variant="top"
           src={imageSrc}
+          alt={name}
           className="restaurant-card-image"
         />
         <Card.Body>
