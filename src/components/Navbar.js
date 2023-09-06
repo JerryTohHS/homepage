@@ -2,6 +2,7 @@ import React from "react";
 import { Navbar, Nav, Container } from "react-bootstrap";
 import LoginButton from "./LoginButton";
 import LogoutButton from "./LogoutButton";
+import { Link } from "react-router-dom";
 
 function AppNavbar() {
   return (
@@ -11,10 +12,14 @@ function AppNavbar() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mx-auto">
-            <Nav.Link href="#home">Home</Nav.Link>
+            <Nav.Link as={Link} to="/">
+              Home
+            </Nav.Link>
             <Nav.Link href="#favourites">Favourites</Nav.Link>
             <Nav.Link href="#reviews">Reviews</Nav.Link>
-            <Nav.Link href="#reservations">My Reservations</Nav.Link>
+            <Nav.Link as={Link} to="/reservations">
+              My Reservations
+            </Nav.Link>
           </Nav>
           <LoginButton />
           <LogoutButton />
