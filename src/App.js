@@ -12,15 +12,16 @@ import { FaSearch } from "react-icons/fa";
 import AppNavbar from "./components/Navbar";
 import RestaurantCard from "./components/RestaurantCard";
 import RestaurantInfoPage from "./components/RestaurantInfoPage"; // Create this component
-//import restaurant1 from "./assets/restaurant1.jpg";
-//import restaurant2 from "./assets/restaurant2.jpg";
-//import restaurant3 from "./assets/restaurant3.jpg";
+import ReservationsList from "./components/ReservationsList";
 import axios from "axios";
 import "./App.css";
 
 export function arrayToBase64(array) {
   const arrayBufferView = new Uint8Array(array); //array is the bytea also known as arrayBuffer that was the data type of image in Postgres
-  const charArr = arrayBufferView.reduce((data, byte)=> (data + String.fromCharCode(byte)), ''); 
+  const charArr = arrayBufferView.reduce(
+    (data, byte) => data + String.fromCharCode(byte),
+    ""
+  );
   const img = btoa(charArr); //conversion happens here changing it into a string using base64 something that img src allowed
 
   return img;
@@ -67,6 +68,7 @@ function App() {
             path="/restaurant/:id"
             element={<RestaurantInfoPage restaurants={restaurants} />}
           />
+          <Route path="/reservations" element={<ReservationsList />} />
         </Routes>
       </div>
     </Router>

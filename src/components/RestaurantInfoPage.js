@@ -13,8 +13,11 @@ function RestaurantInfoPage({ restaurants }) {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState("");
   const [remarks, setRemarks] = useState("");
+
+  //State for getting specific restaurant data
   const [restaurant, setRestaurant] = useState(null);
   const [error, setError] = useState(null);
+
   const { isAuthenticated, getAccessTokenSilently, loginWithRedirect, user } =
     useAuth0();
 
@@ -61,6 +64,7 @@ function RestaurantInfoPage({ restaurants }) {
       const timestamp = `${formattedDate}T${timeString.split("T")[1]}`;
       return timestamp;
     };
+
     let formattedTimestamp = timestamp(selectedDate, selectedTime);
 
     // Retrieve access token
@@ -75,7 +79,7 @@ function RestaurantInfoPage({ restaurants }) {
       adults,
       remarks,
       userEmail: user.email,
-      userName: user.name,
+      userName: user.username,
     });
 
     try {
@@ -87,7 +91,7 @@ function RestaurantInfoPage({ restaurants }) {
           numOfGuests: adults,
           remarks: remarks,
           userEmail: user.email,
-          userName: user.name,
+          userName: user.username,
         },
         {
           headers: {
