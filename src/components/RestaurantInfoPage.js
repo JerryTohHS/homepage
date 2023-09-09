@@ -6,6 +6,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import axios from "axios";
 import { arrayToBase64 } from "../App";
 import { useAuth0 } from "@auth0/auth0-react";
+import { useNavigate } from "react-router-dom";
 
 function RestaurantInfoPage({ restaurants }) {
   // Initialize state for reservation
@@ -13,6 +14,7 @@ function RestaurantInfoPage({ restaurants }) {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState("");
   const [remarks, setRemarks] = useState("");
+  const navigate = useNavigate();
 
   //State for getting specific restaurant data
   const [restaurant, setRestaurant] = useState(null);
@@ -106,6 +108,8 @@ function RestaurantInfoPage({ restaurants }) {
       setSelectedDate(new Date());
       setSelectedTime("");
       setRemarks("");
+
+      navigate(`/reservations`);
     } catch (err) {
       // Handle and log the error
       console.error("Error submitting form:", err.message);
