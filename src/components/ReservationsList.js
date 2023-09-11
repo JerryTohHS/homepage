@@ -58,36 +58,18 @@ function ReservationsList() {
   //Methods to close or show modal by setting the states of show
   const handleClose = () => setShow(false);
   const handleShow = (specificReservation) => {
-
     const { date, time } = formatDateAndTime(
       specificReservation.reservationDate
     );
 
-    // Get the current date
-    const currentDate = new Date();
-    const timeString = time;
-
-    // Extract hours and minutes from the time string
-    let hours = parseInt(timeString.slice(0, 2), 10);
-    let minutes = parseInt(timeString.slice(2, 4), 10);
-
-    // Check if it's PM and adjust the hour if needed
-    if (timeString.slice(4).toLowerCase() === "pm") {
-      if (hours !== 12) {
-        hours += 12;
-      }
-    }
-
-    // Set the time on the current date
-    currentDate.setHours(hours, minutes, 0, 0);
-
-    // Convert the combined date and time to an ISO string
-    const isoString = currentDate.toISOString();
+    const [hour, minute, period] = time.match(/(\d+).(\d+)(\w+)/).slice(1);
+    const zeroPaddedHour = hour.padStart(2, "0");
+    const timeString = `${zeroPaddedHour}:${minute} ${period}`;
 
     setFormData({
       adults: specificReservation.numOfGuests,
       selectedDate: new Date(date),
-      selectedTime: isoString,
+      selectedTime: timeString,
       remarks: specificReservation.remarks,
     });
 
@@ -154,24 +136,25 @@ function ReservationsList() {
     for (let i = 0; i < 24; i++) {
       const time = new Date(startTime.getTime() + i * 15 * 60 * 1000); // 15 minutes interval
       if (time.getHours() < 20) {
-        timeSlots.push(time);
+        let timeString = time.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+
+        timeSlots.push(timeString);
       }
     }
 
     return timeSlots.map((time) => (
       <Button
-        key={time.toISOString()}
+        key={time}
         variant={
-          formData.selectedTime === time.toISOString()
-            ? "primary"
-            : "outline-secondary"
+          formData.selectedTime === time ? "primary" : "outline-secondary"
         }
         className="mr-2 mb-2"
-        onClick={() =>
-          setFormData({ ...formData, selectedTime: time.toISOString() })
-        }
+        onClick={() => setFormData({ ...formData, selectedTime: time })}
       >
-        {time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+        {time}
       </Button>
     ));
   };
@@ -183,6 +166,8 @@ function ReservationsList() {
         <p>Loading...</p>
       ) : error ? (
         <p>Error: {error.message}</p>
+      ) : reservations.length === 0 ? (
+        <p>You have no reservations yet</p>
       ) : (
         <ListGroup as="ol" numbered>
           {reservations.map((reservation) => (

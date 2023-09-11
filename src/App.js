@@ -5,6 +5,7 @@ import {
   Row,
   Col,
   InputGroup,
+  Form,
   FormControl,
   Button,
 } from "react-bootstrap";
@@ -76,34 +77,65 @@ function App() {
 }
 
 function Home({ cuisines, restaurants }) {
+  const [searchInput, setSearchInput] = useState("");
+  const [restorans, setRestorans] = useState([]);
+
+  // Function to handle changes in the input field
+  const handleChange = (event) => {
+    setSearchInput(event.target.value); // Update the searchInput state with the input value
+  };
+
+  // Function to handle form submission
+  const handleSubmit = async (event) => {
+    event.preventDefault(); // Prevent the default form submission behavior
+
+    console.log("Search Input:", searchInput);
+
+    const searchRestaurants = await axios.get(
+      `${process.env.REACT_APP_API_SERVER}/restaurants`,
+      { params: { search: searchInput } }
+    );
+
+    const searchData = await searchRestaurants.data;
+    for (const restoran of searchData) {
+      restoran.imageBase64 = arrayToBase64(restoran.imageData.data);
+    }
+    setRestorans(searchData);
+  };
+
   return (
     <Container className="mt-4">
       <Row className="justify-content-center">
         <Col xs={12} md={6}>
-          <InputGroup>
-            <FormControl
-              placeholder="Try searching for a location, cuisine or restaurant name"
-              className="text-center"
-            />
-            <Button variant="outline-secondary">
-              <FaSearch />
-            </Button>
-          </InputGroup>
-          <br />
-          <h4 className="text-center mb-3 italicize">
-            or select one from here
-          </h4>
-          <div className="d-flex flex-wrap justify-content-center">
-            {cuisines.map((cuisine, index) => (
-              <Button
-                key={index}
-                variant="outline-primary"
-                className="mx-1 my-1"
-              >
-                {cuisine}
+          <Form onSubmit={handleSubmit}>
+            <InputGroup>
+              <FormControl
+                placeholder="Try searching for a location, cuisine or restaurant name"
+                className="text-center"
+                value={searchInput}
+                onChange={handleChange}
+              />
+              <Button type="submit" variant="outline-secondary">
+                <FaSearch />
               </Button>
-            ))}
-          </div>
+            </InputGroup>
+
+            <br />
+            <h4 className="text-center mb-3 italicize">
+              or select one from here
+            </h4>
+            <div className="d-flex flex-wrap justify-content-center">
+              {cuisines.map((cuisine, index) => (
+                <Button
+                  key={index}
+                  variant="outline-primary"
+                  className="mx-1 my-1"
+                >
+                  {cuisine}
+                </Button>
+              ))}
+            </div>
+          </Form>
         </Col>
       </Row>
       <Row>
@@ -112,15 +144,25 @@ function Home({ cuisines, restaurants }) {
         </Col>
       </Row>
       <Row>
-        {restaurants.map((restaurant, index) => (
-          <Col key={index} md={4} className="mb-4">
-            <RestaurantCard
-              id={restaurant.id}
-              name={restaurant.name}
-              imageSrc={`data:image/jpeg;base64,${restaurant.imageBase64}`}
-            />
-          </Col>
-        ))}
+        {restorans.length !== 0
+          ? restorans.map((restaurant, index) => (
+              <Col key={index} md={4} className="mb-4">
+                <RestaurantCard
+                  id={restaurant.id}
+                  name={restaurant.name}
+                  imageSrc={`data:image/jpeg;base64,${restaurant.imageBase64}`}
+                />
+              </Col>
+            ))
+          : restaurants.map((restaurant, index) => (
+              <Col key={index} md={4} className="mb-4">
+                <RestaurantCard
+                  id={restaurant.id}
+                  name={restaurant.name}
+                  imageSrc={`data:image/jpeg;base64,${restaurant.imageBase64}`}
+                />
+              </Col>
+            ))}
       </Row>
     </Container>
   );
