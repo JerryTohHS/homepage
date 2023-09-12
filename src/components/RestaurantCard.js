@@ -1,7 +1,7 @@
 import React from "react";
 import { Card } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import "./RestaurantCard.css"; // Import your CSS file
+import "./RestaurantCard.css";
 
 function RestaurantCard({ id, name, imageSrc }) {
   return (
