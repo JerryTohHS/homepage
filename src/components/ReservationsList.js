@@ -1,6 +1,6 @@
+import "./ReservationsList.css";
 import React, { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
-
 import ListGroup from "react-bootstrap/ListGroup";
 import Image from "react-bootstrap/Image";
 import Modal from "react-bootstrap/Modal";
@@ -10,38 +10,30 @@ import Form from "react-bootstrap/Form";
 import { useAuth0 } from "@auth0/auth0-react";
 
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import { arrayToBase64 } from "../App";
 
 import { format, parseISO } from "date-fns";
 
 function formatDateTime(dateTimeString) {
-  // Parse the ISO date string
   const parsedDate = parseISO(dateTimeString);
-
-  // Format the date portion as "dd MMMM yyyy"
   const formattedDate = format(parsedDate, "dd MMMM yyyy");
-
-  // Format the time portion as "h:mma" (e.g., "7:45am")
   const formattedTime = format(parsedDate, "h:mma");
 
   return `📅 ${formattedDate} | ⏰ ${formattedTime.toLowerCase()}`;
 }
 
 function formatDateAndTime(dateTimeString) {
-  // Parse the ISO date string
   const parsedDate = parseISO(dateTimeString);
-
-  // Format the date portion as "yyyy-MM-dd"
   const formattedDate = format(parsedDate, "yyyy-MM-dd");
-
-  // Format the time portion as "h:mmaa" (e.g., "6:15pm")
   const formattedTime = format(parsedDate, "h:mmaa");
 
   return { date: formattedDate, time: formattedTime };
 }
 
-function ReservationsList() {
+function ReservationList() {
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -53,7 +45,6 @@ function ReservationsList() {
     remarks: "",
   });
 
-  //Show or close modal states
   const [show, setShow] = useState(false);
   //Methods to close or show modal by setting the states of show
   const handleClose = () => setShow(false);
@@ -67,6 +58,7 @@ function ReservationsList() {
     const timeString = `${zeroPaddedHour}:${minute} ${period}`;
 
     setFormData({
+      id: specificReservation.id,
       adults: specificReservation.numOfGuests,
       selectedDate: new Date(date),
       selectedTime: timeString,
@@ -85,13 +77,12 @@ function ReservationsList() {
     }
 
     const getReservationsData = async () => {
-      // Retrieve access token
-      const accessToken = await getAccessTokenSilently({
-        audience: "https://bookit/api",
-        scope: "read:current_user",
-      });
-
       try {
+        const accessToken = await getAccessTokenSilently({
+          audience: "https://bookit/api",
+          scope: "read:current_user",
+        });
+
         const apiUrl = `${process.env.REACT_APP_API_SERVER}/reservations`;
         const response = await axios.get(apiUrl, {
           params: {
@@ -108,17 +99,144 @@ function ReservationsList() {
             reservation.restaurant.imageData.data
           );
         }
-        console.log(responseData);
+
+        // Sort reservations by reservation date in ascending order
+        responseData.sort((a, b) => {
+          return new Date(a.reservationDate) - new Date(b.reservationDate);
+        });
+
         setReservations(responseData);
         setLoading(false);
       } catch (err) {
-        setError(error);
+        setError(err);
         setLoading(false);
       }
     };
 
     getReservationsData();
-  }, []);
+  }, [isAuthenticated, loginWithRedirect, user, getAccessTokenSilently]);
+
+  const handleDelete = async () => {
+    try {
+      const accessToken = await getAccessTokenSilently({
+        audience: "https://bookit/api",
+        scope: "delete:reservation", // Add the appropriate scope for deletion
+      });
+
+      const response = await axios.delete(
+        `${process.env.REACT_APP_API_SERVER}/reservations/${formData.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        // Handle the successful deletion of the reservation here.
+        // Remove the deleted reservation from the list.
+        setReservations((prevReservations) =>
+          prevReservations.filter((r) => r.id !== formData.id)
+        );
+
+        // Show a success toast message
+        toast.success("Reservation deleted successfully", {
+          position: "top-center",
+          autoClose: 3000, // Close the toast after 3 seconds
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+      }
+    } catch (error) {
+      console.error(error);
+    }
+    handleClose();
+  };
+
+  const handleUpdate = async () => {
+    try {
+      const accessToken = await getAccessTokenSilently({
+        audience: "https://bookit/api",
+        scope: "update:reservation", // Add the appropriate scope for deletion
+      });
+
+      const combineDateAndTime = (date, time) => {
+        // Parse the time string to extract hours, minutes, and AM/PM
+        const [hours, minutes, period] = time
+          .match(/(\d+):(\d+) ([APM]+)/)
+          .slice(1);
+
+        // Clone the date object to avoid modifying the original
+        const combinedDate = new Date(date);
+
+        // Set the hours and minutes based on the time string
+        if (period === "PM" && hours !== "12") {
+          combinedDate.setHours(
+            parseInt(hours, 10) + 12,
+            parseInt(minutes, 10)
+          );
+        } else if (period === "AM" && hours === "12") {
+          combinedDate.setHours(0, parseInt(minutes, 10));
+        } else {
+          combinedDate.setHours(parseInt(hours, 10), parseInt(minutes, 10));
+        }
+
+        // Format the combined date as a timestamp string
+        const timestampString = combinedDate.toISOString();
+        return timestampString;
+      };
+
+      const date = new Date(formData.selectedDate);
+      const time = formData.selectedTime;
+
+      let formattedTimestamp = combineDateAndTime(date, time);
+
+      const response = await axios.put(
+        `${process.env.REACT_APP_API_SERVER}/reservations/${formData.id}`,
+        {
+          reservationDate: formattedTimestamp,
+          numOfGuests: formData.adults,
+          remarks: formData.remarks,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        // Update the reservation in the list with the new data
+        setReservations((prevReservations) =>
+          prevReservations.map((r) =>
+            r.id === formData.id
+              ? {
+                  ...r,
+                  reservationDate: formattedTimestamp,
+                  numOfGuests: formData.adults,
+                  remarks: formData.remarks,
+                }
+              : r
+          )
+        );
+
+        // Show a success toast message
+        toast.success("Reservation updated successfully", {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+      }
+    } catch (error) {
+      console.error(error);
+    }
+    handleClose();
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -161,7 +279,9 @@ function ReservationsList() {
 
   return (
     <div>
-      <h1>Your Reservations</h1>
+      <div className="reservations-header">
+        <h1>My Reservations</h1>
+      </div>
       {loading ? (
         <p>Loading...</p>
       ) : error ? (
@@ -184,10 +304,12 @@ function ReservationsList() {
                 height={180}
               />
               <div className="ms-2 me-auto">
-                <div className="fw-bold fs-3">{`${reservation.restaurant.name}`}</div>{" "}
+                <div className="fw-bold fs-3">
+                  {reservation.restaurant.name}
+                </div>
                 <div className="fw-light">
-                  {`${formatDateTime(reservation.reservationDate)}`}
-                </div>{" "}
+                  {formatDateTime(reservation.reservationDate)}
+                </div>
                 <div>{`Pax: ${reservation.numOfGuests}`}</div>
                 {reservation.remarks !== "" && (
                   <div>{`Remarks: ${reservation.remarks}`}</div>
@@ -244,16 +366,17 @@ function ReservationsList() {
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="danger" onClick={handleClose}>
+          <Button variant="danger" onClick={handleDelete}>
             Delete
           </Button>
-          <Button variant="primary" onClick={handleClose}>
+          <Button variant="primary" onClick={handleUpdate}>
             Update
           </Button>
         </Modal.Footer>
       </Modal>
+      <ToastContainer position="top-center" autoClose={3000} />
     </div>
   );
 }
 
-export default ReservationsList;
+export default ReservationList;
