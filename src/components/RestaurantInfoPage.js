@@ -1,30 +1,37 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
+
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+
 import axios from "axios";
 import { arrayToBase64 } from "../App";
+
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from "react-router-dom";
 
-function RestaurantInfoPage({ restaurants }) {
+function RestaurantInfoPage() {
   // Initialize state for reservation
   const [adults, setAdults] = useState(1);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState("");
   const [remarks, setRemarks] = useState("");
+
   const navigate = useNavigate();
 
   //State for getting specific restaurant data
   const [restaurant, setRestaurant] = useState(null);
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const { isAuthenticated, getAccessTokenSilently, loginWithRedirect, user } =
     useAuth0();
 
   const { id } = useParams();
-  //const restaurant = restaurants.find((r) => r.id.toString() === id);
 
   useEffect(() => {
     const getRestaurantData = async () => {
@@ -34,23 +41,19 @@ function RestaurantInfoPage({ restaurants }) {
         // Make the GET request to fetch restaurant data
         let response = await axios.get(apiUrl);
         let restaurantData = response.data;
-        restaurantData.imageBase64 = arrayToBase64(restaurantData.imageData.data);
+        restaurantData.imageBase64 = arrayToBase64(
+          restaurantData.imageData.data
+        );
         setRestaurant(restaurantData);
+        setIsLoading(false);
       } catch (err) {
         setError(err);
+        setIsLoading(false);
       }
     };
 
     getRestaurantData();
   }, [id]);
-
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
-
-  if (!restaurant) {
-    return <div>Restaurant not found</div>;
-  }
 
   const handleReservationSubmit = async (event) => {
     event.preventDefault();
@@ -101,15 +104,28 @@ function RestaurantInfoPage({ restaurants }) {
           },
         }
       );
-      console.log(response);
 
-      // Clear form state
-      setAdults(1);
-      setSelectedDate(new Date());
-      setSelectedTime("");
-      setRemarks("");
+      if (response.status === 200) {
+        // Clear form state
+        setAdults(1);
+        setSelectedDate(new Date());
+        setSelectedTime("");
+        setRemarks("");
 
-      navigate(`/reservations`);
+        navigate(`/reservations`);
+      } else {
+        // Show a success toast message
+        toast.error("There is an error in our system, please try again later", {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+        // Handle other non-200 status codes here
+        throw new Error(`Request failed with status code: ${response.status}`);
+      }
     } catch (err) {
       // Handle and log the error
       console.error("Error submitting form:", err.message);
@@ -144,64 +160,73 @@ function RestaurantInfoPage({ restaurants }) {
 
   return (
     <Container className="mt-4">
-      <Row>
-        <Col md={4}>
-          <img
-            src={`data:image/jpeg;base64,${restaurant.imageBase64}`}
-            alt={restaurant.name}
-            className="img-fluid"
-          />
-          <p>Address: {restaurant.location}</p>
-          <p>Opening Hours: {restaurant.openingHours}</p>
-          <p>Price Range: {restaurant.price}</p>
-          <p>Cuisine: {restaurant.cuisine}</p>
-        </Col>
-        <Col md={8}>
-          <h2>{restaurant.name}</h2>
-          <p>{restaurant.description}</p>
-          <p>
-            <a href={restaurant.menuLink}>View Menu</a>
-          </p>
-          <Form onSubmit={handleReservationSubmit}>
-            <Form.Group controlId="adults">
-              <Form.Label>Number of Adults:</Form.Label>
-              <Form.Control
-                type="number"
-                value={adults}
-                onChange={(e) => setAdults(e.target.value)}
-              />
-            </Form.Group>
-            <br />
-            <Form.Group controlId="date">
-              <Form.Label>Select Date:</Form.Label>
+      {isLoading ? (
+        <div>Loading...</div>
+      ) : !restaurant && isLoading === false ? (
+        <div>Restaurant not found</div>
+      ) : error ? (
+        <div>Error: {error.message}</div>
+      ) : (
+        <Row>
+          <Col md={4}>
+            <img
+              src={`data:image/jpeg;base64,${restaurant.imageBase64}`}
+              alt={restaurant.name}
+              className="img-fluid"
+            />
+            <p>Address: {restaurant.location}</p>
+            <p>Opening Hours: {restaurant.openingHours}</p>
+            <p>Price Range: {restaurant.price}</p>
+            <p>Cuisine: {restaurant.cuisine}</p>
+          </Col>
+          <Col md={8}>
+            <h2>{restaurant.name}</h2>
+            <p>{restaurant.description}</p>
+            <p>
+              <a href={restaurant.menuLink}>View Menu</a>
+            </p>
+            <Form onSubmit={handleReservationSubmit}>
+              <Form.Group controlId="adults">
+                <Form.Label>Number of Adults:</Form.Label>
+                <Form.Control
+                  type="number"
+                  value={adults}
+                  onChange={(e) => setAdults(e.target.value)}
+                />
+              </Form.Group>
               <br />
-              <DatePicker
-                selected={selectedDate}
-                onChange={(date) => setSelectedDate(date)}
-                dateFormat={"yyyy-MM-dd"}
-              />
-            </Form.Group>
-            <br />
-            <Form.Group controlId="time">
-              <Form.Label>Select Time:</Form.Label>
+              <Form.Group controlId="date">
+                <Form.Label>Select Date:</Form.Label>
+                <br />
+                <DatePicker
+                  selected={selectedDate}
+                  onChange={(date) => setSelectedDate(date)}
+                  dateFormat={"yyyy-MM-dd"}
+                />
+              </Form.Group>
               <br />
-              <div>{renderTimeButtons()}</div>
-            </Form.Group>
-            <br />
-            <Form.Group controlId="remarks">
-              <Form.Label>Remarks:</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                value={remarks}
-                onChange={(e) => setRemarks(e.target.value)}
-              />
-            </Form.Group>
-            <br />
-            <Button type="submit">Make Reservation</Button>
-          </Form>
-        </Col>
-      </Row>
+              <Form.Group controlId="time">
+                <Form.Label>Select Time:</Form.Label>
+                <br />
+                <div>{renderTimeButtons()}</div>
+              </Form.Group>
+              <br />
+              <Form.Group controlId="remarks">
+                <Form.Label>Remarks:</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  value={remarks}
+                  onChange={(e) => setRemarks(e.target.value)}
+                />
+              </Form.Group>
+              <br />
+              <Button type="submit">Make Reservation</Button>
+            </Form>
+          </Col>
+          <ToastContainer position="top-center" autoClose={3000} />
+        </Row>
+      )}
     </Container>
   );
 }

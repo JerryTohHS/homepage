@@ -10,12 +10,13 @@ import {
   Button,
 } from "react-bootstrap";
 import { FaSearch } from "react-icons/fa";
-import AppNavbar from "./components/Navbar";
-import RestaurantCard from "./components/RestaurantCard";
-import RestaurantInfoPage from "./components/RestaurantInfoPage"; // Create this component
-import ReservationsList from "./components/ReservationsList";
+import AppNavbar from "./components/Navbar/Navbar";
+import RestaurantCard from "./components/RestaurantCard/RestaurantCard";
+import RestaurantInfoPage from "./components/RestaurantInfoPage";
+import ReservationsList from "./components/ReservationsList/ReservationsList";
 import axios from "axios";
 import "./App.css";
+import { withAuthenticationRequired } from "@auth0/auth0-react";
 
 export function arrayToBase64(array) {
   const arrayBufferView = new Uint8Array(array); //array is the bytea also known as arrayBuffer that was the data type of image in Postgres
@@ -28,8 +29,18 @@ export function arrayToBase64(array) {
   return img;
 }
 
+//Protected route function requiring the user to sign in
+const AuthenticationGuard = ({ component }) => {
+  const Component = withAuthenticationRequired(component, {
+    onRedirecting: () => <div className="page-layout">Loading ...</div>,
+  });
+
+  return <Component />;
+};
+
 function App() {
   const [restaurants, setRestaurants] = useState([]);
+  const [isLoading, setLoading] = useState(true);
 
   const getInitialData = async () => {
     let initialAPICall = await axios.get(
@@ -41,6 +52,7 @@ function App() {
       restaurant.imageBase64 = arrayToBase64(restaurant.imageData.data);
     }
     setRestaurants(restaurantData);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -63,20 +75,29 @@ function App() {
         <Routes>
           <Route
             path="/"
-            element={<Home cuisines={cuisines} restaurants={restaurants} />}
+            element={
+              <Home
+                cuisines={cuisines}
+                restaurants={restaurants}
+                isLoading={isLoading}
+              />
+            }
           />
           <Route
             path="/restaurant/:id"
             element={<RestaurantInfoPage restaurants={restaurants} />}
           />
-          <Route path="/reservations" element={<ReservationsList />} />
+          <Route
+            path="/reservations"
+            element={<AuthenticationGuard component={ReservationsList} />}
+          />
         </Routes>
       </div>
     </Router>
   );
 }
 
-function Home({ cuisines, restaurants }) {
+function Home({ cuisines, restaurants, isLoading }) {
   const [searchInput, setSearchInput] = useState("");
   const [restorans, setRestorans] = useState([]);
 
@@ -94,6 +115,21 @@ function Home({ cuisines, restaurants }) {
     const searchRestaurants = await axios.get(
       `${process.env.REACT_APP_API_SERVER}/restaurants`,
       { params: { search: searchInput } }
+    );
+
+    const searchData = await searchRestaurants.data;
+    for (const restoran of searchData) {
+      restoran.imageBase64 = arrayToBase64(restoran.imageData.data);
+    }
+    setRestorans(searchData);
+  };
+
+  const handleCuisinesFilter = async (selectedFilter) => {
+    console.log("Search Filter:", selectedFilter);
+
+    const searchRestaurants = await axios.get(
+      `${process.env.REACT_APP_API_SERVER}/restaurants`,
+      { params: { search: selectedFilter } }
     );
 
     const searchData = await searchRestaurants.data;
@@ -130,6 +166,7 @@ function Home({ cuisines, restaurants }) {
                   key={index}
                   variant="outline-primary"
                   className="mx-1 my-1"
+                  onClick={() => handleCuisinesFilter(cuisine)}
                 >
                   {cuisine}
                 </Button>
@@ -144,25 +181,29 @@ function Home({ cuisines, restaurants }) {
         </Col>
       </Row>
       <Row>
-        {restorans.length !== 0
-          ? restorans.map((restaurant, index) => (
-              <Col key={index} md={4} className="mb-4">
-                <RestaurantCard
-                  id={restaurant.id}
-                  name={restaurant.name}
-                  imageSrc={`data:image/jpeg;base64,${restaurant.imageBase64}`}
-                />
-              </Col>
-            ))
-          : restaurants.map((restaurant, index) => (
-              <Col key={index} md={4} className="mb-4">
-                <RestaurantCard
-                  id={restaurant.id}
-                  name={restaurant.name}
-                  imageSrc={`data:image/jpeg;base64,${restaurant.imageBase64}`}
-                />
-              </Col>
-            ))}
+        {isLoading ? (
+          <div>Loading...</div>
+        ) : restorans.length !== 0 ? (
+          restorans.map((restaurant, index) => (
+            <Col key={index} md={4} className="mb-4">
+              <RestaurantCard
+                id={restaurant.id}
+                name={restaurant.name}
+                imageSrc={`data:image/jpeg;base64,${restaurant.imageBase64}`}
+              />
+            </Col>
+          ))
+        ) : (
+          restaurants.map((restaurant, index) => (
+            <Col key={index} md={4} className="mb-4">
+              <RestaurantCard
+                id={restaurant.id}
+                name={restaurant.name}
+                imageSrc={`data:image/jpeg;base64,${restaurant.imageBase64}`}
+              />
+            </Col>
+          ))
+        )}
       </Row>
     </Container>
   );
