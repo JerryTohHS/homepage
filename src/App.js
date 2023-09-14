@@ -111,10 +111,9 @@ function Home({ cuisines, restaurants, isLoading }) {
   const handleSubmit = async (event) => {
     event.preventDefault(); // Prevent the default form submission behavior
 
-    const searchRestaurants = await axios.get(
-      `${process.env.REACT_APP_API_SERVER}/restaurants`,
-      { params: { search: searchInput } }
-    );
+    const searchRestaurants = await axios.get(`${BACKEND_URL}/restaurants`, {
+      params: { search: searchInput },
+    });
 
     const searchData = await searchRestaurants.data;
     for (const restoran of searchData) {
@@ -125,10 +124,9 @@ function Home({ cuisines, restaurants, isLoading }) {
 
   const handleCuisinesFilter = async (selectedFilter) => {
 
-    const searchRestaurants = await axios.get(
-      `${process.env.REACT_APP_API_SERVER}/restaurants`,
-      { params: { search: selectedFilter } }
-    );
+    const searchRestaurants = await axios.get(`${BACKEND_URL}/restaurants`, {
+      params: { search: selectedFilter },
+    });
 
     const searchData = await searchRestaurants.data;
     for (const restoran of searchData) {
