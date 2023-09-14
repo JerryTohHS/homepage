@@ -17,6 +17,7 @@ import ReservationsList from "./components/ReservationsList/ReservationsList";
 import axios from "axios";
 import "./App.css";
 import { withAuthenticationRequired } from "@auth0/auth0-react";
+import { BACKEND_URL } from "./constants";
 
 export function arrayToBase64(array) {
   const arrayBufferView = new Uint8Array(array); //array is the bytea also known as arrayBuffer that was the data type of image in Postgres
@@ -44,7 +45,7 @@ function App() {
 
   const getInitialData = async () => {
     let initialAPICall = await axios.get(
-      `${process.env.REACT_APP_API_SERVER}/restaurants`
+      `${BACKEND_URL}/restaurants`
     );
     const restaurantData = initialAPICall.data;
     // Convert image data to base64 for each restaurant
@@ -110,8 +111,6 @@ function Home({ cuisines, restaurants, isLoading }) {
   const handleSubmit = async (event) => {
     event.preventDefault(); // Prevent the default form submission behavior
 
-    console.log("Search Input:", searchInput);
-
     const searchRestaurants = await axios.get(
       `${process.env.REACT_APP_API_SERVER}/restaurants`,
       { params: { search: searchInput } }
@@ -125,7 +124,6 @@ function Home({ cuisines, restaurants, isLoading }) {
   };
 
   const handleCuisinesFilter = async (selectedFilter) => {
-    console.log("Search Filter:", selectedFilter);
 
     const searchRestaurants = await axios.get(
       `${process.env.REACT_APP_API_SERVER}/restaurants`,
