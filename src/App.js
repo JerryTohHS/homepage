@@ -110,8 +110,6 @@ function Home({ cuisines, restaurants, isLoading }) {
   const handleSubmit = async (event) => {
     event.preventDefault(); // Prevent the default form submission behavior
 
-    console.log("Search Input:", searchInput);
-
     const searchRestaurants = await axios.get(
       `${process.env.REACT_APP_API_SERVER}/restaurants`,
       { params: { search: searchInput } }
@@ -125,8 +123,6 @@ function Home({ cuisines, restaurants, isLoading }) {
   };
 
   const handleCuisinesFilter = async (selectedFilter) => {
-    console.log("Search Filter:", selectedFilter);
-
     const searchRestaurants = await axios.get(
       `${process.env.REACT_APP_API_SERVER}/restaurants`,
       { params: { search: selectedFilter } }
