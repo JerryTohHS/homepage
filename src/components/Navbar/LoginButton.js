@@ -8,7 +8,7 @@ const LoginButton = () => {
     return (
       <button
         type="button"
-        class="btn btn-light"
+        className="btn btn-outline-success"
         onClick={() => loginWithRedirect()}
       >
         Log In

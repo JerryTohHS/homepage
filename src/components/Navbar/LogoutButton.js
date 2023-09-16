@@ -10,10 +10,10 @@ const LogoutButton = () => {
       <>
         <button
           type="button"
-          class="btn btn-link"
+          className="btn btn-outline-danger"
           onClick={() => logout({ returnTo: window.location.origin })}
         >
-          Log Out
+          Logout
         </button>
         <br />
       </>

@@ -10,13 +10,15 @@ import Form from "react-bootstrap/Form";
 import { useAuth0 } from "@auth0/auth0-react";
 
 import axios from "axios";
+
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import { arrayToBase64 } from "../App";
+import { arrayToBase64 } from "../../App";
 
 import { format, parseISO } from "date-fns";
 
+//For displaying reservation date from Postgres to the list
 function formatDateTime(dateTimeString) {
   const parsedDate = parseISO(dateTimeString);
   const formattedDate = format(parsedDate, "dd MMMM yyyy");
@@ -25,6 +27,7 @@ function formatDateTime(dateTimeString) {
   return `📅 ${formattedDate} | ⏰ ${formattedTime.toLowerCase()}`;
 }
 
+//Splitting datetime stamp into the respective date and time formats
 function formatDateAndTime(dateTimeString) {
   const parsedDate = parseISO(dateTimeString);
   const formattedDate = format(parsedDate, "yyyy-MM-dd");

@@ -1,10 +1,12 @@
 import React from "react";
 import { Navbar, Nav, Container } from "react-bootstrap";
-import LoginButton from "./LoginButton";
-import LogoutButton from "./LogoutButton";
 import { Link } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
+import LoginButton from "./LoginButton";
+import Profile from "./Profile";
 
 function AppNavbar() {
+  const { isAuthenticated } = useAuth0();
   return (
     <Navbar bg="light" expand="lg">
       <Container>
@@ -15,12 +17,14 @@ function AppNavbar() {
             <Nav.Link as={Link} to="/">
               Home
             </Nav.Link>
-            <Nav.Link as={Link} to="/reservations">
-              My Reservations
-            </Nav.Link>
+            {isAuthenticated && (
+              <Nav.Link as={Link} to="/reservations">
+                My Reservations
+              </Nav.Link>
+            )}
           </Nav>
           <LoginButton />
-          <LogoutButton />
+          <Profile />
         </Navbar.Collapse>
       </Container>
     </Navbar>
