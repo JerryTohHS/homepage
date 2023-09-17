@@ -14,6 +14,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from "react-router-dom";
 
+import { BACKEND_URL } from "../constants";
+
 function RestaurantInfoPage() {
   // Initialize state for reservation
   const [adults, setAdults] = useState(1);
@@ -37,7 +39,7 @@ function RestaurantInfoPage() {
     const getRestaurantData = async () => {
       try {
         // Define the API endpoint for fetching restaurant data
-        const apiUrl = `${process.env.REACT_APP_API_SERVER}/restaurants/${id}`;
+        const apiUrl = `${BACKEND_URL}/restaurants/${id}`;
         // Make the GET request to fetch restaurant data
         let response = await axios.get(apiUrl);
         let restaurantData = response.data;
@@ -78,17 +80,8 @@ function RestaurantInfoPage() {
       scope: "read:current_user",
     });
 
-    // Handle reservation submission logic here
-    console.log("Reservation submitted:", {
-      formattedTimestamp,
-      adults,
-      remarks,
-      userEmail: user.email,
-      userName: user.username,
-    });
-
     try {
-      const apiUrl = `${process.env.REACT_APP_API_SERVER}/reservations/${id}`;
+      const apiUrl = `${BACKEND_URL}/reservations/${id}`;
       const response = await axios.post(
         apiUrl,
         {

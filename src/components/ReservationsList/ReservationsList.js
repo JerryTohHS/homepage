@@ -18,6 +18,8 @@ import { arrayToBase64 } from "../../App";
 
 import { format, parseISO } from "date-fns";
 
+import { BACKEND_URL } from "../../constants";
+
 //For displaying reservation date from Postgres to the list
 function formatDateTime(dateTimeString) {
   const parsedDate = parseISO(dateTimeString);
@@ -86,7 +88,7 @@ function ReservationList() {
           scope: "read:current_user",
         });
 
-        const apiUrl = `${process.env.REACT_APP_API_SERVER}/reservations`;
+        const apiUrl = `${BACKEND_URL}/reservations`;
         const response = await axios.get(apiUrl, {
           params: {
             email: user.email,
@@ -127,7 +129,7 @@ function ReservationList() {
       });
 
       const response = await axios.delete(
-        `${process.env.REACT_APP_API_SERVER}/reservations/${formData.id}`,
+        `${BACKEND_URL}/reservations/${formData.id}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -197,7 +199,7 @@ function ReservationList() {
       let formattedTimestamp = combineDateAndTime(date, time);
 
       const response = await axios.put(
-        `${process.env.REACT_APP_API_SERVER}/reservations/${formData.id}`,
+        `${BACKEND_URL}/reservations/${formData.id}`,
         {
           reservationDate: formattedTimestamp,
           numOfGuests: formData.adults,
