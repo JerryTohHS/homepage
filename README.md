@@ -1,13 +1,10 @@
-# **Boooked!: Rocket Academy Project 3 Full-Stack App**
+# **Boooked!: Rocket Academy Project 3 Full-Stack App (Frontend)**
 
 This is a React app that allows users to:
 - easily search up popular restaurants via name, location or cuisine
 - make a reservation, view all reservations, edit and delete them
   
 ![Reservation App 1](https://github.com/JerryTohHS/homepage/assets/123627163/b35b63c4-1a08-48ad-84c2-ccc6f144232a)
-
-
-https://github.com/JerryTohHS/homepage/assets/123627163/6989c30b-ebe9-45e3-b010-d09fd5dff708
 
 ## **Features**
 
@@ -38,10 +35,14 @@ The app will then be available at http://localhost:3001 (assuming you have set u
 
 ## **Usage**
 
-To use the app, you can browse restaurants without creating an account. To make a reservation, you will need to create an account either using your Google account or with email and password. 
+To use the app, you will need to set up the backend [here](https://github.com/LeL010/project3-backend). 
+
+You can browse restaurants without creating an account. To make a reservation, you will need to create an account either using your Google account or with email and password. 
 
 ## **Contributors**
 
 - Jerry
 - Eng Lin
 - Alayne
+
+https://github.com/JerryTohHS/homepage/assets/123627163/6989c30b-ebe9-45e3-b010-d09fd5dff708
