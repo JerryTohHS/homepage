@@ -7,6 +7,8 @@ This is a React app that allows users to:
 ![Reservation App 1](https://github.com/JerryTohHS/homepage/assets/123627163/b35b63c4-1a08-48ad-84c2-ccc6f144232a)
 
 
+[View whole video here](https://github.com/JerryTohHS/homepage/assets/123627163/6989c30b-ebe9-45e3-b010-d09fd5dff708)
+
 ## **Features**
 
 - User authentication with Auth0
