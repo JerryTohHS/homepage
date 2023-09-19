@@ -1,70 +1,40 @@
-# Getting Started with Create React App
+# **Spork: Rocket Academy Project 2 Full-Stack App (Firebase)**
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is a React app that allows users to:
+- easily search up popular restaurants via name, location or cuisine
+- make a reservation, view all reservations, edit and delete them
+  
+![Homepage of Spork](public/READMEimages/image.png)
 
-## Available Scripts
+## **Features**
 
-In the project directory, you can run:
+- User authentication with Auth0
+- Search and filter 
+- CRUD for reservations
 
-### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## **Technologies**
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- React with CRA
+- MUI
+- Bootstrap
+- Auth0
 
-### `npm test`
+## **Getting Started**
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+To run the app, you will need to have Node.js and npm installed. Once you have those installed, you can clone the repository and run the following commands:
 
-### `npm run build`
+`npm install`
+`npm start`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+The app will then be available at http://localhost:3001 (assuming you have set up your backend first).
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## **Usage**
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+To use the app, you can browse restaurants without creating an account. To make a reservation, you will need to create an account either using your Google account or with email and password. 
 
-### `npm run eject`
+## **Contributors**
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- Jerry
+- Eng Lin
+- Alayne
