@@ -4,13 +4,18 @@ This is a React app that allows users to:
 - easily search up popular restaurants via name, location or cuisine
 - make a reservation, view all reservations, edit and delete them
   
-![Homepage of Spork](public/READMEimages/image.png)
+![Reservation App 1](https://github.com/JerryTohHS/homepage/assets/123627163/b35b63c4-1a08-48ad-84c2-ccc6f144232a)
+
 
 ## **Features**
 
 - User authentication with Auth0
 - Search and filter 
 - CRUD for reservations
+
+![Reservation App 2 - Search](https://github.com/JerryTohHS/homepage/assets/123627163/e31e7966-2202-4886-8ffd-abdb47dfb67b)
+
+![Reservation App 3 CRUD](https://github.com/JerryTohHS/homepage/assets/123627163/214869b8-5eda-465f-a7eb-3e37990cd548)
 
 
 ## **Technologies**
